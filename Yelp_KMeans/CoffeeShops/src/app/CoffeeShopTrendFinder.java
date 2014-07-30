@@ -33,9 +33,14 @@ public class CoffeeShopTrendFinder {
 		MySQLDatabase sql = new MySQLDatabase();
 		for (int i = 0; i < businesses.length; i++){
 			LinkedList<DataPoint> results = sql.query("SELECT * FROM Wordcount WHERE business='"+businesses[i]+"'");
-			for (DataPoint dp : results)
-				System.out.println(dp.toString());
+			DataPoint[] wordCounts = new DataPoint[results.size()];
+			for (int j = 0; j < wordCounts.length; j++)
+				wordCounts[j] = results.get(j);
+			businessPoints.add(new BusinessPoint(businesses[i],wordCounts));
 		}
+		BusinessPoint[] bpts = getFurthestPoints(businessPoints);
+		for (int i = 0; i < bpts.length; i++)
+			System.out.println(bpts[i].toString());
 	}
 
 	public static void main(String[] args){
@@ -51,9 +56,6 @@ public class CoffeeShopTrendFinder {
 				if (!distExists(allPoints.get(i),allPoints.get(j),distancesList))
 					distancesList.add(new Distance(allPoints.get(i), allPoints.get(j), getEucDist(allPoints.get(i).getCounts(),allPoints.get(j).getCounts())));
 			}
-		}
-		for (Distance d : distancesList){
-			System.out.println(d.toString());
 		}
 		return new BusinessPoint[]{};
 	}
