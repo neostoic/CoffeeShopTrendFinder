@@ -31,7 +31,7 @@ public class MySQLDatabase {
 	 try{
 	    Class.forName("com.mysql.jdbc.Driver");
 	   
-	    System.out.print("Password: ")
+	    System.out.print("Password: ");
 	    PASS = scan.nextLine();
 	    System.out.println("Connecting to database...");
 	    connection = DriverManager.getConnection(DB_URL,USER,PASS);
@@ -55,7 +55,7 @@ public class MySQLDatabase {
 	    stmt = conn.createStatement();
 	    ResultSet rs = stmt.executeQuery(queryStmt);
 
-	    while(rs.next()){
+	    while(rs.next()){ 
 	       int id  = rs.getInt("id");
 	       String word = rs.getString("word");
 	       int count = rs.getInt("count");

@@ -2,15 +2,23 @@ package app;
 
 public class BusinessPoint {
 	private String name;
-	private DataPoint[] rating;
-	public BusinessPoint(String n, DataPoint[] words){
+	private DataPoint[] counts;
+	public BusinessPoint(String n, DataPoint[] cnts){
 		name = n;
-		rating = words;
+		counts = cnts;
 	}
-	public DataPoint[] getRatings(){
-		return rating;
+	public DataPoint[] getCounts(){
+		return counts;
 	}
 	public String getName(){
 		return name;
+	}
+	public String toString(){
+		String bpStr = "BusinessPoint Name: " + name;
+		bpStr += "DataPoints:";
+		for (int i = 0; i < counts.length; i++){
+			bpStr += " " + counts[i];
+		}
+		return bpStr;
 	}
 }
