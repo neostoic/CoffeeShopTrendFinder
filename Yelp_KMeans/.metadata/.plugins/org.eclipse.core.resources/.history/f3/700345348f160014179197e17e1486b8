@@ -1,0 +1,9 @@
+package app;
+
+public class Distance {
+	private DataPoint point1, point2;
+	private double length;
+	public Distance(DataPoint pt1, DataPoint pt2, double len){
+		
+	}
+}

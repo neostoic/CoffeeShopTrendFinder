@@ -1,0 +1,33 @@
+package app;
+
+import java.util.Scanner;
+
+public class CoffeeShopTrendFinder {
+	public CoffeeShopTrendFinder() {
+		Scanner scan = new Scanner(System.in);
+		int[] v1 = map(scan.nextLine().split(","));
+		int[] v2 = map(scan.nextLine().split(","));
+	}
+
+	public double getPearsonDist(int[] v1, int[] v2){
+		if (v1.length != v2.length)
+			return 0.0;
+		double dist = 0.0;
+        for (int i = 0; i < v1.length; i++){
+        	dist += Math.pow(v1[i]-v2[i],2);
+        }
+        dist = Math.sqrt(dist);
+        return dist;
+	}
+	public static void main(String[] args){
+		CoffeeShopTrendFinder f = new CoffeShopTrendFinder();
+	}
+	
+	public int[] map(String[] strArr){
+		int[] intArr = new int[strArr.length];
+		for (int i = 0; i < strArr.length; i++){
+			intArr[i] = Integer.parseInt(strArr[i]);
+		}
+		
+	}
+}

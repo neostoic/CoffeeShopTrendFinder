@@ -1,0 +1,7 @@
+package app;
+
+public class BusinessPoint {
+	private String name;
+	private int[] rating;
+	public BusinessPoint(String n, DataPoint[] ){
+}
