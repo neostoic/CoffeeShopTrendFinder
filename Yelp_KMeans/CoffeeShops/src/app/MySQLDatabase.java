@@ -26,6 +26,11 @@ public class MySQLDatabase {
 	 System.out.println("Success");
  }
  
+ public MySQLDatabase(String pswd){
+	 conn = connect(pswd);
+	 System.out.println("Success");
+ }
+ 
  public Connection connect() {
 	 Connection connection = null;
 	 try{
@@ -33,6 +38,25 @@ public class MySQLDatabase {
 	   
 	    System.out.print("Password: ");
 	    PASS = scan.nextLine();
+	    System.out.println("Connecting to database...");
+	    connection = DriverManager.getConnection(DB_URL,USER,PASS);
+	
+	 }catch(SQLException se){
+	    //Handle errors for JDBC
+	    se.printStackTrace();
+	 }catch(Exception e){
+	    //Handle errors for Class.forName
+	    e.printStackTrace();
+	 }
+	 return connection;
+ }//end connect()
+ 
+ public Connection connect(String pswd) {
+	 Connection connection = null;
+	 try{
+	    Class.forName("com.mysql.jdbc.Driver");
+	   
+	    PASS = pswd;
 	    System.out.println("Connecting to database...");
 	    connection = DriverManager.getConnection(DB_URL,USER,PASS);
 	
@@ -74,6 +98,47 @@ public class MySQLDatabase {
 		 e.printStackTrace();
 	 }
 	 return result;
+ }
+ 
+ public LinkedList<String> getWords(){
+	 Statement stmt = null;
+	 System.out.println("Creating statement...");
+	 LinkedList<String> allWords = new LinkedList<String>();
+	 try{
+	    stmt = conn.createStatement();
+	    ResultSet rs = stmt.executeQuery("SELECT word FROM Wordcount");
+	    while(rs.next()){ 
+	       String word = rs.getString("word");
+	       allWords.add(word);
+	    }
+	    rs.close();
+	    stmt.close();
+	 }catch(Exception e){
+		 e.printStackTrace();
+	 }
+	 return allWords;
+ }
+ 
+ public LinkedList<DataPoint> getAllDataPoints(){
+	 Statement stmt = null;
+	 System.out.println("Creating statement...");
+	 LinkedList<DataPoint> allDataPoints = new LinkedList<DataPoint>();
+	 try{
+	    stmt = conn.createStatement();
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM Wordcount");
+	    while(rs.next()){ 
+	       int id  = rs.getInt("id");
+	       String word = rs.getString("word");
+	       int count = rs.getInt("count");
+	       String business = rs.getString("business");
+	       allDataPoints.add(new DataPoint(id,word,count,business));
+	    }
+	    rs.close();
+	    stmt.close();
+	 }catch(Exception e){
+		 e.printStackTrace();
+	 }
+	 return allDataPoints;
  }
  
  public void close(){

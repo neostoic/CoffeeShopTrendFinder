@@ -27,37 +27,66 @@ public class CoffeeShopTrendFinder {
 			"chocolate-fish-coffee-roasters-sacramento",
 			"a-perfect-cup-sacramento-2"
 	};
+	private String dbPassword;
 	public CoffeeShopTrendFinder() {
-//		Scanner scan = new Scanner(System.in);
-//		int k = scan.nextInt();
-		MySQLDatabase sql = new MySQLDatabase();
+		// Create MySQL db instance through JDBC
+		
+		Scanner scan = new Scanner(System.in);
+		dbPassword = scan.nextLine();
+		
+		MySQLDatabase sql = new MySQLDatabase(dbPassword);
+		
+		// Populate all BusinessPoints
 		for (int i = 0; i < businesses.length; i++){
 			LinkedList<DataPoint> results = sql.query("SELECT * FROM Wordcount WHERE business='"+businesses[i]+"'");
 			DataPoint[] wordCounts = new DataPoint[results.size()];
 			for (int j = 0; j < wordCounts.length; j++)
 				wordCounts[j] = results.get(j);
+			
 			businessPoints.add(new BusinessPoint(businesses[i],wordCounts));
 		}
-		BusinessPoint[] bpts = getFurthestPoints(businessPoints);
-		for (int i = 0; i < bpts.length; i++)
-			System.out.println(bpts[i].toString());
+		
+		// Close sql instance.
+		sql.close();
+		
+		equalizeVectorLengths(businessPoints);
+		getBPLengths(businessPoints);
+		
+		// Get the two points that are furthest from one another. And get the distance between them.
+		Object[] bpts = getFurthestPoints(businessPoints);
+		System.out.println(((BusinessPoint)bpts[0]).getName());
+		System.out.println(((BusinessPoint)bpts[1]).getName());
+		System.out.println("distance: " + bpts[2]);
+		
 	}
 
 	public static void main(String[] args){
 		CoffeeShopTrendFinder f = new CoffeeShopTrendFinder();
 	}
 
-	public BusinessPoint[] getFurthestPoints(LinkedList<BusinessPoint> allPoints){
+	public Object[] getFurthestPoints(LinkedList<BusinessPoint> allPoints){
 		LinkedList<Distance> distancesList = new LinkedList<Distance>();
 		for (int i = 0; i < allPoints.size(); i++){
 			for (int j = 0; j < allPoints.size(); j++){
 				if (allPoints.get(i) == allPoints.get(j))
 					continue;
-				if (!distExists(allPoints.get(i),allPoints.get(j),distancesList))
+				if (!distExists(allPoints.get(i),allPoints.get(j),distancesList)){
 					distancesList.add(new Distance(allPoints.get(i), allPoints.get(j), getEucDist(allPoints.get(i).getCounts(),allPoints.get(j).getCounts())));
+				}
 			}
 		}
-		return new BusinessPoint[]{};
+		// find max distance
+		Object[] maxPoints = new Object[3];
+		maxPoints[2] = (double)0.0;
+		for (Distance d: distancesList){
+			if (d.getLength() > (double)maxPoints[2]){
+				maxPoints[0] = d.getPoint1();
+				maxPoints[1] = d.getPoint2();
+				maxPoints[2] = d.getLength();
+			}
+		}
+		
+		return maxPoints;
 	}
 	
 	public boolean distExists(BusinessPoint pt1, BusinessPoint pt2, LinkedList<Distance> distances){
@@ -97,6 +126,26 @@ public class CoffeeShopTrendFinder {
 		for (int i = 0; i < strArr.length; i++)
 			intArr[i] = Integer.parseInt(strArr[i]);
 		return intArr;
+	}
+	
+	// makes all vectors same length
+	public void equalizeVectorLengths(LinkedList<BusinessPoint> allPoints){
+		// get all words
+		MySQLDatabase sql = new MySQLDatabase(dbPassword);
+		LinkedList<String> allWords = sql.getWords();
+		for (String currWord : allWords){
+			for (BusinessPoint currBusPt: allPoints){
+				if (!currBusPt.hasWord(currWord)){
+					currBusPt.addDataPoint(new DataPoint(999,currWord,0,currBusPt.getName()));
+				}
+			}
+		}
+	}
+	
+	public void getBPLengths(LinkedList<BusinessPoint> allPoints){
+		for (BusinessPoint bp : allPoints){
+			System.out.println(bp.getName() + ": " + bp.getCounts().length + " words.");
+		}
 	}
 	
 	
