@@ -1,10 +1,13 @@
 package app;
 
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class CoffeeShopTrendFinder {
 	private LinkedList<BusinessPoint> businessPoints = new LinkedList<BusinessPoint>();
+	private Cluster[] clusters;
+	private Random rand = new Random();
 	private String[] businesses = {
 			"Tupelo-coffee-house-and-roasting-sacramento",
 			"the-naked-lounge-coffee-house-sacramento-2",
@@ -55,18 +58,40 @@ public class CoffeeShopTrendFinder {
 		
 		// Get the two points that are furthest from one another. And get the distance between them.
 		Object[] bpts = getFurthestPoints(businessPoints);
-		System.out.println(((BusinessPoint)bpts[0]).getName());
-		System.out.println(((BusinessPoint)bpts[1]).getName());
+		BusinessPoint furthestBP1 = (BusinessPoint)bpts[0];
+		BusinessPoint furthestBP2 = (BusinessPoint)bpts[1];
+		System.out.println(furthestBP1.getName());
+		System.out.println(furthestBP2.getName());
 		System.out.println("distance: " + bpts[2]);
 		
 		// Start k-means: find out k (how many clusters)
 		System.out.print("How many clusters? k = ");
 		k = scan.nextInt();
 		
+		// Create clusters
+		clusters = new Cluster[k];
+		LinkedList<BusinessPoint> bpsAvail = businessPoints;
+		clusters[0] = new Cluster("cluster 0", furthestBP1); // Make furthest clusters first.
+		clusters[clusters.length-1] = new Cluster("cluster " + (clusters.length-1), furthestBP2);
+		for (int i = 1; i < clusters.length-1; i++){
+			clusters[i] = new Cluster("cluster "+i, getRandomBusinessPoint(bpsAvail)); // Gets random business points for the clusters that ARE NOT the furthest clusters.
+		}
+		
+		// Perform algorithm
+		performKMeans(k, clusters);
+		
 	}
-
+	
 	public static void main(String[] args){
 		CoffeeShopTrendFinder f = new CoffeeShopTrendFinder();
+	}
+	
+	public void performKMeans(int kVal, Cluster[] kClusters){
+		
+	}
+	
+	public BusinessPoint getRandomBusinessPoint(LinkedList<BusinessPoint> bps){
+		return bps.remove(rand.nextInt(bps.size()));
 	}
 	
 	public Object[] getFurthestPoints(LinkedList<BusinessPoint> allPoints){
