@@ -28,6 +28,7 @@ public class CoffeeShopTrendFinder {
 			"a-perfect-cup-sacramento-2"
 	};
 	private String dbPassword;
+	private int k;
 	public CoffeeShopTrendFinder() {
 		// Create MySQL db instance through JDBC
 		
@@ -58,12 +59,16 @@ public class CoffeeShopTrendFinder {
 		System.out.println(((BusinessPoint)bpts[1]).getName());
 		System.out.println("distance: " + bpts[2]);
 		
+		// Start k-means: find out k (how many clusters)
+		System.out.print("How many clusters? k = ");
+		k = scan.nextInt();
+		
 	}
 
 	public static void main(String[] args){
 		CoffeeShopTrendFinder f = new CoffeeShopTrendFinder();
 	}
-
+	
 	public Object[] getFurthestPoints(LinkedList<BusinessPoint> allPoints){
 		LinkedList<Distance> distancesList = new LinkedList<Distance>();
 		for (int i = 0; i < allPoints.size(); i++){
