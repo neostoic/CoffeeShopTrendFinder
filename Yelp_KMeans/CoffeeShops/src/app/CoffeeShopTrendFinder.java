@@ -31,11 +31,12 @@ public class CoffeeShopTrendFinder {
 			"a-perfect-cup-sacramento-2"
 	};
 	private String dbPassword;
-	private int k;
+	private int k = 0;
 	public CoffeeShopTrendFinder() {
 		// Create MySQL db instance through JDBC
 		
 		Scanner scan = new Scanner(System.in);
+		System.out.print("Password: ");
 		dbPassword = scan.nextLine();
 		
 		MySQLDatabase sql = new MySQLDatabase(dbPassword);
@@ -54,19 +55,23 @@ public class CoffeeShopTrendFinder {
 		sql.close();
 		
 		equalizeVectorLengths(businessPoints);
-		getBPLengths(businessPoints);
+//		getBPLengths(businessPoints);
 		
 		// Get the two points that are furthest from one another. And get the distance between them.
 		Object[] bpts = getFurthestPoints(businessPoints);
 		BusinessPoint furthestBP1 = (BusinessPoint)bpts[0];
 		BusinessPoint furthestBP2 = (BusinessPoint)bpts[1];
-		System.out.println(furthestBP1.getName());
-		System.out.println(furthestBP2.getName());
-		System.out.println("distance: " + bpts[2]);
+//		System.out.println(furthestBP1.getName());
+//		System.out.println(furthestBP2.getName());
+//		System.out.println("distance: " + bpts[2]);
 		
 		// Start k-means: find out k (how many clusters)
 		System.out.print("How many clusters? k = ");
-		k = scan.nextInt();
+		while (k < businessPoints.size() && k == 0){
+			k = scan.nextInt();
+			if (k > businessPoints.size())
+				System.out.println("Error: k is greater than the number of businessPoints available.");
+		}
 		
 		// Create clusters
 		clusters = new Cluster[k];
@@ -76,9 +81,11 @@ public class CoffeeShopTrendFinder {
 		for (int i = 1; i < clusters.length-1; i++){
 			clusters[i] = new Cluster("cluster "+i, getRandomBusinessPoint(bpsAvail)); // Gets random business points for the clusters that ARE NOT the furthest clusters.
 		}
+		bpsAvail.remove(furthestBP1);
+		bpsAvail.remove(furthestBP2);
 		
 		// Perform algorithm
-		performKMeans(k, clusters);
+		performKMeans(k, clusters,bpsAvail);
 		
 	}
 	
@@ -86,8 +93,28 @@ public class CoffeeShopTrendFinder {
 		CoffeeShopTrendFinder f = new CoffeeShopTrendFinder();
 	}
 	
-	public void performKMeans(int kVal, Cluster[] kClusters){
-		
+	public void performKMeans(int kVal, Cluster[] kClusters, LinkedList<BusinessPoint> nonClusteredPts){
+		// Put non-clustered Business points into their closest clusters
+		for (BusinessPoint bp: nonClusteredPts){
+			int count = 0;
+			double minDist = 0.0; // closest distance
+			Cluster closestCluster = null;
+			for (int i = 0; i < kClusters.length; i++){
+				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
+				if (count == 0){
+					minDist = currDist;
+					closestCluster = kClusters[i];
+					count++;
+					continue;
+				}
+				else if (currDist < minDist){
+					minDist = currDist;
+					closestCluster = kClusters[i];
+				}
+			} // end of < kClusters.length
+			closestCluster.addPoint(bp);
+		} // end of bp: nonClustered
+		// TODO: Perform the rest of kmeans... LOL!
 	}
 	
 	public BusinessPoint getRandomBusinessPoint(LinkedList<BusinessPoint> bps){

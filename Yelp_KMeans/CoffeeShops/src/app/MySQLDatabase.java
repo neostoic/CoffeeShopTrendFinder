@@ -82,7 +82,7 @@ public class MySQLDatabase {
 	    while(rs.next()){ 
 	       int id  = rs.getInt("id");
 	       String word = rs.getString("word");
-	       int count = rs.getInt("count");
+	       double count = rs.getInt("count");
 	       String business = rs.getString("business");
 
 	       //Display values
