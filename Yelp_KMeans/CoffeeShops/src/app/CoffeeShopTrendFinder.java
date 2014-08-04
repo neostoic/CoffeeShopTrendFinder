@@ -84,6 +84,9 @@ public class CoffeeShopTrendFinder {
 		performKMeans(k, clusters,bpsAvail);
 		displayClusters();
 		
+		for (int i = 0; i < clusters.length; i++)
+			System.out.println(clusters[i]);
+		
 	}
 	
 	public static void main(String[] args){
@@ -102,6 +105,7 @@ public class CoffeeShopTrendFinder {
 					writeToFile(kClusters[i].toString());
 				}catch(Exception e){}
 				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
+				System.out.println(bp.getName() + "-" + kClusters[i] + " | " + currDist);
 				if (count == 0){
 					minDist = currDist;
 					closestCluster = kClusters[i];

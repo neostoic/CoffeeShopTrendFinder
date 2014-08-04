@@ -48,7 +48,7 @@ public class Cluster {
 			centroidPtList.add(new DataPoint(888,currWordStr,currWordAvg,name+" centroid")); // Use 888 to indicate centroid.
 		}
 		for (int i = 0; i < centroidPtList.size(); i++){
-			centroidPoints[i] = centroidPtList.get(0);
+			centroidPoints[i] = centroidPtList.get(i);
 		}
 		BusinessPoint centroid = new BusinessPoint(name + " centroid",centroidPoints);
 		return centroid;
