@@ -1,5 +1,6 @@
 package app;
 
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
@@ -30,18 +31,18 @@ public class CoffeeShopTrendFinder {
 			"chocolate-fish-coffee-roasters-sacramento",
 			"a-perfect-cup-sacramento-2"
 	};
+	private Scanner scan = new Scanner(System.in);
 	private String dbPassword;
 	private int k = 0;
 	public CoffeeShopTrendFinder() {
 		// Create MySQL db instance through JDBC
 		
-		Scanner scan = new Scanner(System.in);
 		System.out.print("Password: ");
 		dbPassword = scan.nextLine();
 		
 		MySQLDatabase sql = new MySQLDatabase(dbPassword);
 		
-		// Populate all BusinessPoints
+//		// Populate all BusinessPoints
 		for (int i = 0; i < businesses.length; i++){
 			LinkedList<DataPoint> results = sql.query("SELECT * FROM Wordcount WHERE business='"+businesses[i]+"'");
 			DataPoint[] wordCounts = new DataPoint[results.size()];
@@ -53,17 +54,12 @@ public class CoffeeShopTrendFinder {
 		
 		// Close sql instance.
 		sql.close();
-		
 		equalizeVectorLengths(businessPoints);
-//		getBPLengths(businessPoints);
 		
 		// Get the two points that are furthest from one another. And get the distance between them.
 		Object[] bpts = getFurthestPoints(businessPoints);
 		BusinessPoint furthestBP1 = (BusinessPoint)bpts[0];
 		BusinessPoint furthestBP2 = (BusinessPoint)bpts[1];
-//		System.out.println(furthestBP1.getName());
-//		System.out.println(furthestBP2.getName());
-//		System.out.println("distance: " + bpts[2]);
 		
 		// Start k-means: find out k (how many clusters)
 		System.out.print("How many clusters? k = ");
@@ -86,6 +82,7 @@ public class CoffeeShopTrendFinder {
 		
 		// Perform algorithm
 		performKMeans(k, clusters,bpsAvail);
+		displayClusters();
 		
 	}
 	
@@ -100,12 +97,15 @@ public class CoffeeShopTrendFinder {
 			double minDist = 0.0; // closest distance
 			Cluster closestCluster = null;
 			for (int i = 0; i < kClusters.length; i++){
+				try{
+					writeToFile(bp.getName());
+					writeToFile(kClusters[i].toString());
+				}catch(Exception e){}
 				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
 				if (count == 0){
 					minDist = currDist;
 					closestCluster = kClusters[i];
 					count++;
-					continue;
 				}
 				else if (currDist < minDist){
 					minDist = currDist;
@@ -114,7 +114,7 @@ public class CoffeeShopTrendFinder {
 			} // end of < kClusters.length
 			closestCluster.addPoint(bp);
 		} // end of bp: nonClustered
-		// TODO: Perform the rest of kmeans... LOL!
+	
 	}
 	
 	public BusinessPoint getRandomBusinessPoint(LinkedList<BusinessPoint> bps){
@@ -205,5 +205,29 @@ public class CoffeeShopTrendFinder {
 		}
 	}
 	
+	public void displayClusters(){
+		System.out.println("----Clusters----");
+		for (int i = 0; i < clusters.length; i++){
+			System.out.println(clusters[i].toString());
+		}
+		System.out.println("----Clusters----");
+	}
 	
+	public void testEucDist(double[] v1, double[] v2){
+		if (v1.length != v2.length)
+			return;
+		double dist = 0.0;
+        for (int i = 0; i < v1.length; i++){
+        	dist += Math.pow(v1[i]-v2[i],2);
+        }
+        dist = Math.sqrt(dist);
+        System.out.println("dist="+dist);
+	}
+	
+	
+	public void writeToFile(String content) throws Exception{
+		PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+		writer.println(content);
+		writer.close();
+	}
 }

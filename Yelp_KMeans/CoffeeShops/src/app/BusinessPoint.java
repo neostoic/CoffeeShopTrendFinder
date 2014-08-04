@@ -41,11 +41,11 @@ public class BusinessPoint {
 		return false;
 	}
 	public String toString(){
-		String bpStr = "BusinessPoint Name: " + name;
-		bpStr += "DataPoints:";
-		for (int i = 0; i < counts.length; i++){
-			bpStr += " " + counts[i];
-		}
+		String bpStr = "| BusinessPoint Name: " + name;
+//		bpStr += " DataPoints:";
+//		for (int i = 0; i < counts.length; i++){
+//			bpStr += " " + counts[i];
+//		}
 		return bpStr;
 	}
 }

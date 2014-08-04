@@ -1,5 +1,6 @@
 package app;
 
+import java.io.PrintWriter;
 import java.util.LinkedList;
 
 public class Cluster {
@@ -10,8 +11,14 @@ public class Cluster {
 		clusterList = new LinkedList<BusinessPoint>();
 		clusterList.add(firstPoint);
 	}
+	public String getName(){
+		return name;
+	}
 	public void addPoint(BusinessPoint bp){
 		clusterList.add(bp);
+	}
+	public void removePoint(BusinessPoint bp){
+		clusterList.remove(bp);
 	}
 	public String toString(){
 		String clustStr = "";
@@ -20,6 +27,10 @@ public class Cluster {
 		for (BusinessPoint bp : clusterList)
 			clustStr += bp.getName() + ",";
 		clustStr += ")";
+		clustStr += "\n\t";
+		for (int i = 0; i < getCentroid().getCounts().length; i++){
+			clustStr += getCentroid().getCounts()[i];
+		}
 		return clustStr;
 	}
 	public BusinessPoint getCentroid(){
@@ -42,4 +53,5 @@ public class Cluster {
 		BusinessPoint centroid = new BusinessPoint(name + " centroid",centroidPoints);
 		return centroid;
 	}
+
 }
