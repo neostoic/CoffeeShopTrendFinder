@@ -1,6 +1,10 @@
 package app;
 
-import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
@@ -100,10 +104,8 @@ public class CoffeeShopTrendFinder {
 			double minDist = 0.0; // closest distance
 			Cluster closestCluster = null;
 			for (int i = 0; i < kClusters.length; i++){
-				try{
-					writeToFile(bp.getName());
-					writeToFile(kClusters[i].toString());
-				}catch(Exception e){}
+//				writeToFile(bp.getName());
+//				writeToFile(kClusters[i].toString());
 				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
 				System.out.println(bp.getName() + "-" + kClusters[i] + " | " + currDist);
 				if (count == 0){
@@ -229,9 +231,16 @@ public class CoffeeShopTrendFinder {
 	}
 	
 	
-	public void writeToFile(String content) throws Exception{
-		PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
-		writer.println(content);
-		writer.close();
+	public void writeToFile(String content){
+		Writer writer = null;
+		try {
+		    writer = new BufferedWriter(new OutputStreamWriter(
+		          new FileOutputStream("log.txt"), "utf-8"));
+		    writer.write(content);
+		} catch (IOException ex) {
+		  // report
+		} finally {
+		   try {writer.close();} catch (Exception ex) {}
+		}
 	}
 }
