@@ -74,7 +74,7 @@ public class CoffeeShopTrendFinder {
 		
 		// Create clusters
 		clusters = new Cluster[k];
-		LinkedList<BusinessPoint> bpsAvail = businessPoints;
+		LinkedList<BusinessPoint> bpsAvail = businessPoints; // TODO: try changing this to businssPoints.clone();
 		bpsAvail.remove(furthestBP1);
 		bpsAvail.remove(furthestBP2);
 		clusters[0] = new Cluster("cluster 0", furthestBP1); // Make furthest clusters first.
