@@ -14,9 +14,8 @@ public class CoffeeShopTrendFinder {
 	private Cluster[] clusters;
 	private Random rand = new Random();
 	private String[] businesses = {
-			"Tupelo-coffee-house-and-roasting-sacramento",
 			"the-naked-lounge-coffee-house-sacramento-2",
-			"The-naked-lounge-coffee-house-sacramento",
+			"the-naked-lounge-coffee-house-sacramento",
 			"temple-coffee-roasters-sacramento-3",
 			"temple-coffee-roasters-sacramento-2",
 			"temple-coffee-roasters-sacramento",
@@ -46,7 +45,7 @@ public class CoffeeShopTrendFinder {
 		
 		MySQLDatabase sql = new MySQLDatabase(dbPassword);
 		
-//		// Populate all BusinessPoints
+		// Populate all BusinessPoints
 		for (int i = 0; i < businesses.length; i++){
 			LinkedList<DataPoint> results = sql.query("SELECT * FROM Wordcount WHERE business='"+businesses[i]+"'");
 			DataPoint[] wordCounts = new DataPoint[results.size()];
@@ -76,16 +75,16 @@ public class CoffeeShopTrendFinder {
 		// Create clusters
 		clusters = new Cluster[k];
 		LinkedList<BusinessPoint> bpsAvail = businessPoints;
+		bpsAvail.remove(furthestBP1);
+		bpsAvail.remove(furthestBP2);
 		clusters[0] = new Cluster("cluster 0", furthestBP1); // Make furthest clusters first.
 		clusters[clusters.length-1] = new Cluster("cluster " + (clusters.length-1), furthestBP2);
 		for (int i = 1; i < clusters.length-1; i++){
 			clusters[i] = new Cluster("cluster "+i, getRandomBusinessPoint(bpsAvail)); // Gets random business points for the clusters that ARE NOT the furthest clusters.
 		}
-		bpsAvail.remove(furthestBP1);
-		bpsAvail.remove(furthestBP2);
 		
 		// Perform algorithm
-		performKMeans(k, clusters,bpsAvail);
+		performKMeans(k, clusters,bpsAvail, businessPoints);
 		displayClusters();
 		
 		for (int i = 0; i < clusters.length; i++)
@@ -97,17 +96,16 @@ public class CoffeeShopTrendFinder {
 		CoffeeShopTrendFinder f = new CoffeeShopTrendFinder();
 	}
 	
-	public void performKMeans(int kVal, Cluster[] kClusters, LinkedList<BusinessPoint> nonClusteredPts){
-		// Put non-clustered Business points into their closest clusters
+	public void performKMeans(int kVal, Cluster[] kClusters, LinkedList<BusinessPoint> nonClusteredPts, LinkedList<BusinessPoint> allBPs){
+		/**
+		 * PHASE 1: Put non-clustered Business points into their closest clusters
+		 */
 		for (BusinessPoint bp: nonClusteredPts){
 			int count = 0;
 			double minDist = 0.0; // closest distance
 			Cluster closestCluster = null;
 			for (int i = 0; i < kClusters.length; i++){
-//				writeToFile(bp.getName());
-//				writeToFile(kClusters[i].toString());
 				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
-				System.out.println(bp.getName() + "-" + kClusters[i] + " | " + currDist);
 				if (count == 0){
 					minDist = currDist;
 					closestCluster = kClusters[i];
@@ -120,7 +118,40 @@ public class CoffeeShopTrendFinder {
 			} // end of < kClusters.length
 			closestCluster.addPoint(bp);
 		} // end of bp: nonClustered
+		
+		/**
+		 * PHASE 2: Relocate business points.
+		 */
+		
+		// Iterate loops for relocation.
+		int newDistCount = -1;
+		int iterations = 0;
+		while (newDistCount != 0 || iterations == 50){
+			for (BusinessPoint bp : allBPs){
+				newDistCount = 0;
+				for (int i = 0; i < clusters.length; i++){
+					if (clusters[i].containsPoint(bp))
+						continue;
+					double newDist = getEucDist(bp.getCounts(),clusters[i].getCentroid().getCounts());
+					Cluster currClust = getCorrespondingCluster(bp,clusters);
+					double currDist = getEucDist(bp.getCounts(),currClust.getCentroid().getCounts());
+					if (newDist < currDist){
+						currClust.removePoint(bp);
+						clusters[i].addPoint(bp);
+						newDistCount++;
+					}
+				}
+			}
+			iterations++;
+		}
+	}
 	
+	public Cluster getCorrespondingCluster(BusinessPoint bp, Cluster[] clArr){
+		for (int i = 0; i < clArr.length; i++){
+			if (clArr[i].containsPoint(bp))
+				return clArr[i];
+		}
+		return null;
 	}
 	
 	public BusinessPoint getRandomBusinessPoint(LinkedList<BusinessPoint> bps){
@@ -215,7 +246,7 @@ public class CoffeeShopTrendFinder {
 		System.out.println("----Clusters----");
 		for (int i = 0; i < clusters.length; i++){
 			System.out.println(clusters[i].toString());
-		}
+		} 
 		System.out.println("----Clusters----");
 	}
 	

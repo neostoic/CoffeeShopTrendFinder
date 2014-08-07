@@ -20,6 +20,13 @@ public class Cluster {
 	public void removePoint(BusinessPoint bp){
 		clusterList.remove(bp);
 	}
+	public boolean containsPoint(BusinessPoint bp){
+		for (BusinessPoint b : clusterList){
+			if (b.equals(bp))
+				return true;
+		}
+		return false;
+	}
 	public String toString(){
 		String clustStr = "";
 		clustStr += name;
@@ -28,9 +35,6 @@ public class Cluster {
 			clustStr += bp.getName() + ",";
 		clustStr += ")";
 		clustStr += "\n\t";
-		for (int i = 0; i < getCentroid().getCounts().length; i++){
-			clustStr += getCentroid().getCounts()[i];
-		}
 		return clustStr;
 	}
 	public BusinessPoint getCentroid(){
@@ -41,12 +45,11 @@ public class Cluster {
 			int currWordCount = 0;
 			String currWordStr = "";
 			for (BusinessPoint bp: clusterList){
-				// TODO: clusterList only has 1 cluster!!!! BAD
 				currWordCount += bp.getCounts()[i].getCount();
 				currWordStr = bp.getCounts()[i].getWord();
 			}
 			// TODO: currWordAvg is doing 1/10336 find out why currWordCount is not summing
-			double currWordAvg = (double)currWordCount/(double)wordCountLength;
+			double currWordAvg = (double)currWordCount/(double)clusterList.size();
 			centroidPtList.add(new DataPoint(888,currWordStr,currWordAvg,name+" centroid")); // Use 888 to indicate centroid.
 		}
 		for (int i = 0; i < centroidPtList.size(); i++){
