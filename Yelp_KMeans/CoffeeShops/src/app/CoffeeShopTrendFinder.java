@@ -86,10 +86,6 @@ public class CoffeeShopTrendFinder {
 		// Perform algorithm
 		performKMeans(k, clusters,bpsAvail, businessPoints);
 		displayClusters();
-		
-		for (int i = 0; i < clusters.length; i++)
-			System.out.println(clusters[i]);
-		
 	}
 	
 	public static void main(String[] args){
