@@ -41,9 +41,11 @@ public class Cluster {
 			int currWordCount = 0;
 			String currWordStr = "";
 			for (BusinessPoint bp: clusterList){
+				// TODO: clusterList only has 1 cluster!!!! BAD
 				currWordCount += bp.getCounts()[i].getCount();
 				currWordStr = bp.getCounts()[i].getWord();
 			}
+			// TODO: currWordAvg is doing 1/10336 find out why currWordCount is not summing
 			double currWordAvg = (double)currWordCount/(double)wordCountLength;
 			centroidPtList.add(new DataPoint(888,currWordStr,currWordAvg,name+" centroid")); // Use 888 to indicate centroid.
 		}

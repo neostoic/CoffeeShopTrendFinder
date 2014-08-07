@@ -100,10 +100,10 @@ public class CoffeeShopTrendFinder {
 			double minDist = 0.0; // closest distance
 			Cluster closestCluster = null;
 			for (int i = 0; i < kClusters.length; i++){
-				try{
-					writeToFile(bp.getName());
-					writeToFile(kClusters[i].toString());
-				}catch(Exception e){}
+//				try{
+//					writeToFile(bp.getName());
+//					writeToFile(kClusters[i].toString());
+//				}catch(Exception e){}
 				double currDist = getEucDist(bp.getCounts(), kClusters[i].getCentroid().getCounts());
 				System.out.println(bp.getName() + "-" + kClusters[i] + " | " + currDist);
 				if (count == 0){
