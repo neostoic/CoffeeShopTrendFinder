@@ -128,8 +128,9 @@ public class CoffeeShopTrendFinder {
 		int newDistCount = -1;
 		int iterations = 0;
 		while (newDistCount != 0 || iterations == 50){
+			newDistCount = 0;
 			for (BusinessPoint bp : allBPs){
-				newDistCount = 0;
+				// newDistCount = 0; MOVING THIS BEFORE THE FOR LOOP
 				for (int i = 0; i < clusters.length; i++){
 					if (clusters[i].containsPoint(bp))
 						continue;
