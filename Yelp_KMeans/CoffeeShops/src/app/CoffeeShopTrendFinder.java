@@ -124,6 +124,7 @@ public class CoffeeShopTrendFinder {
 		 */
 		
 		// Iterate loops for relocation.
+		// TODO: all of phase 2 should use kclusters[i] and not clusters[i]
 		int newDistCount = -1;
 		int iterations = 0;
 		while (newDistCount != 0 || iterations == 50){
