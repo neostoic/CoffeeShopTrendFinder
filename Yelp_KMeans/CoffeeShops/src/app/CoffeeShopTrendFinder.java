@@ -79,7 +79,7 @@ public class CoffeeShopTrendFinder {
 		bpsAvail.remove(furthestBP2);
 		clusters[0] = new Cluster("cluster 0", furthestBP1); // Make furthest clusters first.
 		clusters[clusters.length-1] = new Cluster("cluster " + (clusters.length-1), furthestBP2); // TODO: Make sure this is the last spot in the array.
-		for (int i = 1; i < clusters.length-1; i++){
+		for (int i = 1; i < clusters.length-1; i++){ // TODO: Maybe, this should go to clusters.length-2?
 			clusters[i] = new Cluster("cluster "+i, getRandomBusinessPoint(bpsAvail)); // Gets random business points for the clusters that ARE NOT the furthest clusters.
 		}
 		
