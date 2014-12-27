@@ -1,16 +1,20 @@
 //STEP 1. Import required packages
 import java.sql.*;
+import java.util.Scanner;
 
 public class FirstClass {
    // JDBC driver name and database URL
    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
    static final String DB_URL = "jdbc:mysql://host214.hostmonster.com/dalisayd_wc";
-
+   
    //  Database credentials
    static final String USER = "dalisayd_david";
-   static final String PASS = "patrick3";
+   private String PASS = "";
    
+   private Scanner scan = new Scanner(System.in);
    public static void main(String[] args) {
+   System.out.print("Database pswd:");
+   PASS = scan.nextLine();
    Connection conn = null;
    Statement stmt = null;
    try{
